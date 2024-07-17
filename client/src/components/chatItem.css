@@ -1,0 +1,53 @@
+.chat-container {
+    max-height: 80vh; /* Adjust as needed */
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat {
+    display: flex;
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.chat-end {
+    justify-content: flex-end;
+}
+
+.chat-start {
+    justify-content: flex-start;
+}
+
+.chat-bubble {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f1f0f0;
+    color: black;
+}
+
+.chat-end .chat-bubble {
+    background-color: #d1e7dd;
+}
+
+.chat-start .chat-bubble {
+    background-color: #e2e3e5;
+}
+.imageGpt{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.userPart{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: white;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+
+}
