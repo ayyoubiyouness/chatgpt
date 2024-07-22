@@ -10,8 +10,8 @@ export const register = async (req, res) => {
             ...req.body,
             password: hash
         })
-        await newUser.save()
-        res.status(200).json("User has been created ")
+        const anas =  await newUser.save()
+        res.status(200).json(anas)
     } catch (error) {
         console.log(error)
 
@@ -20,7 +20,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         console.log(req.body.name)
-        const user = await User.findOne({ name: req.body.name })
+        const user = await User.findOne({ email: req.body.email })
         if (!user) return res.status(500).json("user not found");
         const isPasswordCorrect = await bcrypt.compare(
             req.body.password,

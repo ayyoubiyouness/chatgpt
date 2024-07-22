@@ -42,3 +42,9 @@ app.listen(8800, ()=> {
     connect()
     console.log("connected to bakcend")
 })
+
+// paste into .env file :
+// MONGO_URL="mongodb+srv://younessayy22:Engineer2002@youness.srdvuku.mongodb.net/chatgpt?retryWrites=true&w=majority"
+// OPENAI_API="sk-proj-LYNFCKbiTLDksEb34bJ1T3BlbkFJvtV0FAqswc84crf4yFOK"
+// ORGANISATION_ID="org-f8NAm6abQJIgBKgreGIxhxWF"
+// JWT = "8hEnPGeoBqGUT6zksxt4G95gW+uMdzwe7EVaRnp0xRI="
