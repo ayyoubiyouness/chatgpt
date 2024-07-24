@@ -1,35 +1,85 @@
-import { Avatar, Box, Button, IconButton, StepButton, Typography } from '@mui/material'
+import { Avatar, Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, StepButton, Typography } from '@mui/material'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from '../context/authContext'
 import { red } from '@mui/material/colors'
 import ChatItem from '../components/ChatItem'
 import { IoMdSend } from 'react-icons/io'
 import { sendChatRequest } from '../config/api-request'
+import axios from 'axios'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { IoAddCircle } from "react-icons/io5";
 
 const Chat = () => {
   const inputRef = useRef(null)
+  const location = useLocation()
+  console.log("this is location")
+  const chatbotId = location.pathname.split("/")[2]
+
+  const navigate = useNavigate();
   const { user, loading } = useContext(AuthContext)
-  
+
   console.log(user)
   const [chatMessages, setChatMessages] = useState([])
- 
+  const [typed, setTyped] = useState(false)
 
+
+  
   const handleSubmit = async () => {
+    if (!chatbotId) {
+      try {
+        const chatbotId = await axios.get(`http://localhost:8800/api/chat/new/chatBot/${user._id}`)
+        navigate(`/chat/${chatbotId.data}`)
+        
+      } catch (error) {
+        console.log(error)
+        
+      }
+    }
     const content = inputRef.current.value
     if (inputRef && inputRef.current) {
       inputRef.current.value = "";
     }
-    const newMessage = {role : "user", content}
+    const newMessage = { role: "user", content }
     setChatMessages((prev) => [...prev, newMessage]);
-    console.log(content)
-    console.log(user._id)
-    const chatData = await sendChatRequest(content)
+    const userId = user._id
+    const chatData = await sendChatRequest(content, userId, chatbotId)
     console.log(chatData)
     setChatMessages([...chatData])
 
 
   }
-  
+  useEffect(() => {
+    const handleClick = async () => {
+      const chatId = chatbotId
+      const userId = user._id
+      console.log("hello")
+      console.log(chatId)
+      console.log(userId)
+      try {
+        const chats = await axios.get(`http://localhost:8800/api/chat/chats/${chatId}/${userId}`)
+        setTyped(true)
+        setChatMessages(chats.data[0].chats)
+        console.log("done")
+      } catch (error) {
+        console.log(error)
+
+      }
+    }
+    handleClick()
+
+  }, [location])
+  const handleAddChat = () => {
+    navigate("/chat")
+  }
+
+
+  const handleClickChat = (e, chat) => {
+
+    console.log("hello from sidebar")
+    navigate(`/chat/${chat.id}`)
+  }
+  console.log(user.chats)
+
   return (
     <Box sx={{
       display: "flex",
@@ -49,7 +99,7 @@ const Chat = () => {
           sx={{
             display: "flex",
             width: "100%",
-            height: "60vh",
+            height: "100%",
             bgcolor: "rgb(17,29,39)",
             borderRadius: 5,
             flexDirection: "column",
@@ -75,10 +125,41 @@ const Chat = () => {
             }}>
             You are talking to a ChatBOT
           </Typography>
-          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
-            You can ask some questions related to Knowledge, Business, Advices,
-            Education, etc. But avoid sharing personal information
+
+
+          <Button sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems : "center",
+            gap:"5px"
+
+          }}
+          onClick={handleAddChat}
+          >
+            <Typography>New Chat</Typography>
+            <IoAddCircle style={{fontSize:"20px", fontWeight:"700" }}/>
+          </Button>
+          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 1, p: 3 }}>
+            Previous chats
           </Typography>
+
+          <nav aria-label="secondary mailbox folders " style={{ maxHeight: '50%0', overflowY: 'auto' }}>
+            <List>
+              {
+                user.chats.map((chat) => (
+                  <ListItem disablePadding>
+                    <ListItemButton>
+                      <ListItemText primary={chat.chats[0].content} onClick={(e) => handleClickChat(e, chat)} />
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              }
+
+
+            </List>
+          </nav>
+
+
           <Button
             sx={{
               width: "200px",
@@ -135,8 +216,8 @@ const Chat = () => {
             )
           } */}
 
-          <ChatItem chatMessages={chatMessages} />
-          
+          <ChatItem chatMessages={chatMessages} typed={typed} />
+
         </Box>
         <div
           style={{

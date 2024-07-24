@@ -78,12 +78,16 @@ import Cursor from './Cursor';
 // export default ChatItem
 
 import './chatItem.css'
-const ChatItem = ({ chatMessages }) => {
+const ChatItem = ({ chatMessages, typed }) => {
     const messagesEndRef = useRef(null)
     const [displayResponse, setDisplayResponse] = useState("");
     const [completedTyping, setCompletedTyping] = useState(false);
     useEffect(() => {
-        if (!chatMessages?.length) {
+        if (!chatMessages?.length ) {
+            return;
+        }
+        if (typed) {
+            setCompletedTyping(true)
             return;
         }
         setCompletedTyping(false);

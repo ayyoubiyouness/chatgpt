@@ -3,7 +3,41 @@ import { configureOpenAI } from "../config/openai-configuration.js";
 import User from "../models/User.js"
 
 import OpenAI from 'openai';
-import { finished } from "stream";
+
+export const getSpecificConversation = async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const chatId = req.params.chatId
+        const user = await User.findById(userId)
+        if (!user) {
+            return res.status(401).json({ message: "User not registered" })
+        }
+        const chats = user.chats.filter((item) => item.id === chatId)
+        return res.status(200).json(chats)
+
+    } catch (error) {
+        console.log(error)
+
+    }
+
+
+}
+
+export const createNewChatBot = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        const newChatGroupId = randomUUID();
+        const chatGroup = { id: newChatGroupId, chats: [] }
+        user.chats.push(chatGroup)
+        await user.save()
+        res.status(200).json(newChatGroupId)
+
+    } catch (error) {
+        console.log(error)
+
+    }
+    
+}
 
 export const generateChatCompletion = async (req, res) => {
     const { message, userId, chatGroupId } = req.body
@@ -25,9 +59,9 @@ export const generateChatCompletion = async (req, res) => {
                 content
             }))
             user.chats[indice].chats.push({ content: message, role: "user" })
-            
+
             chats.push({ content: message, role: "user" })
-            console.log(chats)
+
             const config = configureOpenAI()
             const openai = new OpenAI(config)
             const chatResponse = await openai.chat.completions.create({
@@ -35,9 +69,9 @@ export const generateChatCompletion = async (req, res) => {
                 messages: chats,
             });
             user.chats[indice].chats.push(chatResponse.choices[0].message);
-            console.log(user.chats[indice].chats) 
+            console.log(user.chats[indice].chats)
             await user.save()
-            return  res.status(200).json(
+            return res.status(200).json(
                 user.chats[indice].chats
             )
 
@@ -68,12 +102,11 @@ export const generateChatCompletion = async (req, res) => {
                 messages: chats,
             });
             user.chats[indice].chats.push(chatResponse.choices[0].message);
-            console.log(user.chats[indice].chats) 
+            console.log(user.chats[indice].chats)
             await user.save()
-            console.log("finished")
-
-
-            return true
+            return res.status(200).json(
+                user.chats[indice].chats
+            )
         }
 
         const chats = chatGroup.chats.map(({ role, content }) => ({
