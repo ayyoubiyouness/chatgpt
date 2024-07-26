@@ -9,10 +9,14 @@ import NotFound from "./page/NotFound";
 import Header from "./components/Header";
 import { useContext } from "react";
 import { AuthContext } from "./context/authContext";
+import InitializeGoogleAnalytics from "./analytics/Analytics";
 
 
 function App() {
   const { user } = useContext(AuthContext)
+  useEffect(() => {
+    InitializeGoogleAnalytics()
+  }, [])
   return (
     <div>
       <Header />
