@@ -1,8 +1,14 @@
 import React from 'react';
 import { Container, Typography, Box, Button, Grid } from '@mui/material';
 import { TypeAnimation } from 'react-type-animation';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate()
+  const handleClick = (e) => {
+    e.preventDefault()
+    navigate('/chat')
+  }
   return (
     <Box
       sx={{
@@ -80,7 +86,7 @@ const Home = () => {
               backgroundColor: '#1765c3',
             },
           }}
-          href="/chat"
+          onClick={handleClick}
         >
           Get Started
         </Button>

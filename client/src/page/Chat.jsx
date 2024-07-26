@@ -14,7 +14,7 @@ const Chat = () => {
   const location = useLocation()
   const [chatMessages, setChatMessages] = useState([])
   const chatbotId = location.pathname.split("/")[2]
-  console.log(chatbotId)
+  
   const [chatBotCredential, setChatBotCredential] = useState(chatbotId)
 
   const [typed, setTyped] = useState(false)
@@ -26,8 +26,8 @@ const Chat = () => {
   const handleSubmit = async () => {
     try {
       let currentChatBotCredential = chatBotCredential;
-      if (!chatbotId) {
-        const response = await axios.get(`http://localhost:8800/api/chat/new/chatBot/${user._id}`);
+      if (!chatBotCredential) {
+        const response = await axios.get(`https://chatgpt-r8cc.onrender.com/api/chat/new/chatBot/${user._id}`);
         currentChatBotCredential = response.data;
         setChatBotCredential(currentChatBotCredential);
         // Wait for state update to complete
@@ -43,6 +43,8 @@ const Chat = () => {
       const newMessage = { role: "user", content };
       setChatMessages((prev) => [...prev, newMessage]);
       const userId = user._id;
+      console.log("this is the currentChatBotCredential")
+      console.log(currentChatBotCredential)
       const chatData = await sendChatRequest(content, userId, currentChatBotCredential);
 
 
@@ -65,7 +67,7 @@ const Chat = () => {
       const userId = user._id
 
       try {
-        const chats = await axios.get(`http://localhost:8800/api/chat/chats/${chatId}/${userId}`)
+        const chats = await axios.get(`https://chatgpt-r8cc.onrender.com/api/chat/chats/${chatId}/${userId}`)
         setTyped(true)
         setChatMessages(chats.data[0].chats)
 
@@ -84,11 +86,11 @@ const Chat = () => {
 
 
   const handleClickChat = (e, chat) => {
-
-
+   
+    setChatBotCredential(chat.id)
     navigate(`/chat/${chat.id}`)
   }
-  console.log(user.chats)
+ 
 
   return (
     <Box sx={{

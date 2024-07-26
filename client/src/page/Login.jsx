@@ -17,7 +17,7 @@ const Login = () => {
         const password = formData.get("password")
         try {
             toast.loading("Signing In", { id: "login" });
-            const res = await axios.post("http://localhost:8800/api/auth/login", { email, password })
+            const res = await axios.post("https://chatgpt-r8cc.onrender.com/api/auth/login", { email, password })
             if (res.data) {
                 dispatch({ type: "LOGIN_SUCCESS", payload: res.data.details })
                 navigate("/chat")
@@ -33,7 +33,7 @@ const Login = () => {
     const handleClick = async () => {
         try {
             toast.loading("Signing In", { id: "login" });
-            const res = await axios.post("http://localhost:8800/api/auth/login", { email : "haya@gmail.com", password: "123456" })
+            const res = await axios.post("https://chatgpt-r8cc.onrender.com/api/auth/login", { email : "haya@gmail.com", password: "123456" })
             if (res.data) {
                 dispatch({ type: "LOGIN_SUCCESS", payload: res.data.details })
                 navigate("/chat")
@@ -91,7 +91,7 @@ const Login = () => {
                         </Typography>
                         
                         <Typography>
-                            If you don't want to create an account, click on Use default credentials
+                            If you don't want to create an account,  Please click on Use default credentials
                         </Typography>
                         <CustomisedInput name={"email"} type={"email"} label={"Email"} />
                         <CustomisedInput name={"password"} type={"password"} label={"Password"} />

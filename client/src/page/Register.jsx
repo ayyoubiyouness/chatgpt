@@ -18,7 +18,7 @@ const Register = () => {
         const name = formData.get("name") 
         try {
             toast.loading("In registering", { id: "login" });
-            const res = await axios.post("http://localhost:8800/api/auth/register", {email, password, name}) 
+            const res = await axios.post("https://chatgpt-r8cc.onrender.com/api/auth/register", {email, password, name}) 
             if (res.data) {
               navigate("/login")
                 toast.success("Account created successfully", { id: "login" });

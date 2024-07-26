@@ -7,7 +7,7 @@ import Register from "./page/Register";
 import Chat from "./page/Chat";
 import NotFound from "./page/NotFound";
 import Header from "./components/Header";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "./context/authContext";
 import InitializeGoogleAnalytics from "./analytics/Analytics";
 

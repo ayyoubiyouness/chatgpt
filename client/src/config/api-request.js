@@ -5,7 +5,7 @@ export const sendChatRequest = async (message,userId,  chatBotCredential) => {
     try {
         console.log(message)
         
-        const res = await axios.post("http://localhost:8800/api/chat/new", { message, userId,  chatBotCredential })
+        const res = await axios.post("https://chatgpt-r8cc.onrender.com/api/chat/new", { message, userId,  chatBotCredential })
         const data = res.data
         return data
 
