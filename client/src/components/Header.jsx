@@ -5,6 +5,13 @@ import NavigationLink from './NavigationLink'
 import { AuthContext } from '../context/authContext'
 const Header = () => {
   const { user } = useContext(AuthContext)
+  const { dispatch, loading, error } = useContext(AuthContext)
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    dispatch({ type: "LOGOUT" })
+
+
+  }
   return (
     <AppBar
       sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}
@@ -13,16 +20,13 @@ const Header = () => {
         <Logo />
         <div>
           {user ? <>
-            <NavigationLink bg="#51538f"
-              to="/chat"
-              text="Go To Chat"
-              textColor="white" />
+            
             <NavigationLink
               bg="#51538f"
               textColor="white"
               to="/"
               text="logout"
-            // onClick={auth.logout}
+              onClick={handleLogout}
             />
           </> : <>
             <NavigationLink

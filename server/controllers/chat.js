@@ -36,11 +36,11 @@ export const createNewChatBot = async (req, res) => {
         console.log(error)
 
     }
-    
+
 }
 
 export const generateChatCompletion = async (req, res) => {
-    const { message, userId, chatGroupId } = req.body
+    const { message, userId, chatBotCredential } = req.body
     try {
         const user = await User.findById(userId)
         if (!user)
@@ -48,82 +48,81 @@ export const generateChatCompletion = async (req, res) => {
 
         // Find the chat group by chatGroupId
         let chatGroup
-        if (chatGroupId) {
-            console.log(user)
-            chatGroup = user.chats.find(group => group.id === chatGroupId);
-            const indice = user.chats.findIndex(function (item) {
-                return item.id === chatGroupId;
-            });
-            const chats = user.chats[indice].chats.map(({ role, content }) => ({
-                role,
-                content
-            }))
-            user.chats[indice].chats.push({ content: message, role: "user" })
 
-            chats.push({ content: message, role: "user" })
-
-            const config = configureOpenAI()
-            const openai = new OpenAI(config)
-            const chatResponse = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
-                messages: chats,
-            });
-            user.chats[indice].chats.push(chatResponse.choices[0].message);
-            console.log(user.chats[indice].chats)
-            await user.save()
-            return res.status(200).json(
-                user.chats[indice].chats
-            )
-
-        }
-
-
-        if (!chatGroupId) {
-
-            const newChatGroupId = randomUUID();
-            chatGroup = { id: newChatGroupId, chats: [] }
-            user.chats.push(chatGroup)
-            const indice = user.chats.findIndex(function (item) {
-                return item.id === newChatGroupId;
-            });
-
-
-            const chats = user.chats[indice].chats.map(({ role, content }) => ({
-                role,
-                content
-            }))
-            user.chats[indice].chats.push({ content: message, role: "user" })
-            chats.push({ content: message, role: "user" })
-            console.log(chats)
-            const config = configureOpenAI()
-            const openai = new OpenAI(config)
-            const chatResponse = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
-                messages: chats,
-            });
-            user.chats[indice].chats.push(chatResponse.choices[0].message);
-            console.log(user.chats[indice].chats)
-            await user.save()
-            return res.status(200).json(
-                user.chats[indice].chats
-            )
-        }
-
-        const chats = chatGroup.chats.map(({ role, content }) => ({
+        
+        chatGroup = user.chats.find(group => group.id === chatBotCredential);
+        const indice = user.chats.findIndex(function (item) {
+            return item.id === chatBotCredential;
+        });
+        const chats = user.chats[indice].chats.map(({ role, content }) => ({
             role,
             content
         }))
+        user.chats[indice].chats.push({ content: message, role: "user" })
+
         chats.push({ content: message, role: "user" })
-        user.chats.chats.push({ content: message, role: "user" })
+
         const config = configureOpenAI()
         const openai = new OpenAI(config)
         const chatResponse = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: chats,
         });
-        user.chats.chats.push(chatResponse.choices[0].message);
-        await user.save();
-        return res.status(200).json({ chatGroupId: chatGroup.id, chats: chatGroup.chats });
+        user.chats[indice].chats.push(chatResponse.choices[0].message);
+        await user.save()
+        return res.status(200).json(
+            user.chats[indice].chats
+        )
+
+
+
+
+        // if (!chatGroupId) {
+
+        //     const newChatGroupId = randomUUID();
+        //     chatGroup = { id: newChatGroupId, chats: [] }
+        //     user.chats.push(chatGroup)
+        //     const indice = user.chats.findIndex(function (item) {
+        //         return item.id === newChatGroupId;
+        //     });
+
+
+        //     const chats = user.chats[indice].chats.map(({ role, content }) => ({
+        //         role,
+        //         content
+        //     }))
+        //     user.chats[indice].chats.push({ content: message, role: "user" })
+        //     chats.push({ content: message, role: "user" })
+        //     console.log(chats)
+        //     const config = configureOpenAI()
+        //     const openai = new OpenAI(config)
+        //     const chatResponse = await openai.chat.completions.create({
+        //         model: "gpt-3.5-turbo",
+        //         messages: chats,
+        //     });
+        //     user.chats[indice].chats.push(chatResponse.choices[0].message);
+        //     console.log(user.chats[indice].chats)
+        //     await user.save()
+        //     return res.status(200).json(
+        //         user.chats[indice].chats
+        //     )
+        // }
+
+        // const chats = chatGroup.chats.map(({ role, content }) => ({
+        //     role,
+        //     content
+        // }))
+        // chats.push({ content: message, role: "user" })
+        // user.chats.chats.push({ content: message, role: "user" })
+        // const config = configureOpenAI()
+        // const openai = new OpenAI(config)
+        // const chatResponse = await openai.chat.completions.create({
+        //     model: "gpt-3.5-turbo",
+        //     messages: chats,
+        // });
+        // user.chats.chats.push(chatResponse.choices[0].message);
+        // await user.save();
+        // return res.status(200).json({ chatGroupId: chatGroup.id, chats: chatGroup.chats });
 
     } catch (error) {
         console.log(error)

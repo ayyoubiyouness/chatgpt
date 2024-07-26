@@ -82,14 +82,15 @@ const ChatItem = ({ chatMessages, typed }) => {
     const messagesEndRef = useRef(null)
     const [displayResponse, setDisplayResponse] = useState("");
     const [completedTyping, setCompletedTyping] = useState(false);
+    const { user } = useContext(AuthContext)
     useEffect(() => {
-        if (!chatMessages?.length ) {
+        if (!chatMessages?.length) {
             return;
         }
-        if (typed) {
-            setCompletedTyping(true)
-            return;
-        }
+        // if (typed) {
+        //     setCompletedTyping(true)
+        //     return;
+        // }
         setCompletedTyping(false);
         let i = 0;
         const stringResponse = chatMessages[chatMessages.length - 1].content;
@@ -107,7 +108,7 @@ const ChatItem = ({ chatMessages, typed }) => {
     }, [chatMessages])
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [ displayResponse]);
+    }, [displayResponse]);
     return (
         <div className="max-h-0">
             {
@@ -116,8 +117,14 @@ const ChatItem = ({ chatMessages, typed }) => {
                         {
                             message?.role === "user" && (
                                 <div className="chat chat-end" >
+
                                     <span className="chat-bubble whitespace-pre-line">
                                         {message?.content}
+                                    </span>
+                                    <span
+                                        className='userPart'
+                                    >
+                                        {user?.name[0]}
                                     </span>
                                 </div>
                             )
@@ -126,6 +133,9 @@ const ChatItem = ({ chatMessages, typed }) => {
                             messageIndex === chatMessages.length - 1 &&
                             message?.role === "assistant" && (
                                 <div className="chat chat-start" ref={messagesEndRef}>
+                                    
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSobT6Nq7W-FJnK5lLapZlwySLwB0W4sKCYDg&s" alt="openai" className='imageGpt'  />
+                                    
                                     <span className="chat-bubble whitespace-pre-line">
                                         {displayResponse}
                                         {!completedTyping && <Cursor />}
@@ -138,6 +148,9 @@ const ChatItem = ({ chatMessages, typed }) => {
                             message?.role === "assistant" &&
                             messageIndex !== chatMessages.length - 1 && (
                                 <div className="chat chat-start">
+                                   
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSobT6Nq7W-FJnK5lLapZlwySLwB0W4sKCYDg&s" alt="openai" className='imageGpt'  />
+                                    
                                     <span className="chat-bubble whitespace-pre-line">
                                         {message?.content}
                                     </span>

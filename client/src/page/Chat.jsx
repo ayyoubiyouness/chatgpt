@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, StepButton, Typography } from '@mui/material'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from '../context/authContext'
-import { red } from '@mui/material/colors'
+import { blue, red } from '@mui/material/colors'
 import ChatItem from '../components/ChatItem'
 import { IoMdSend } from 'react-icons/io'
 import { sendChatRequest } from '../config/api-request'
@@ -12,54 +12,63 @@ import { IoAddCircle } from "react-icons/io5";
 const Chat = () => {
   const inputRef = useRef(null)
   const location = useLocation()
-  console.log("this is location")
+  const [chatMessages, setChatMessages] = useState([])
   const chatbotId = location.pathname.split("/")[2]
+  console.log(chatbotId)
+  const [chatBotCredential, setChatBotCredential] = useState(chatbotId)
 
-  const navigate = useNavigate();
+  const [typed, setTyped] = useState(false)
   const { user, loading } = useContext(AuthContext)
 
-  console.log(user)
-  const [chatMessages, setChatMessages] = useState([])
-  const [typed, setTyped] = useState(false)
+  const navigate = useNavigate();
 
 
-  
   const handleSubmit = async () => {
-    if (!chatbotId) {
-      try {
-        const chatbotId = await axios.get(`http://localhost:8800/api/chat/new/chatBot/${user._id}`)
-        navigate(`/chat/${chatbotId.data}`)
-        
-      } catch (error) {
-        console.log(error)
-        
+    try {
+      let currentChatBotCredential = chatBotCredential;
+      if (!chatbotId) {
+        const response = await axios.get(`http://localhost:8800/api/chat/new/chatBot/${user._id}`);
+        currentChatBotCredential = response.data;
+        setChatBotCredential(currentChatBotCredential);
+        // Wait for state update to complete
+        await new Promise(resolve => setTimeout(resolve, 0));
+
       }
-    }
-    const content = inputRef.current.value
-    if (inputRef && inputRef.current) {
-      inputRef.current.value = "";
-    }
-    const newMessage = { role: "user", content }
-    setChatMessages((prev) => [...prev, newMessage]);
-    const userId = user._id
-    const chatData = await sendChatRequest(content, userId, chatbotId)
-    console.log(chatData)
-    setChatMessages([...chatData])
 
 
-  }
+      const content = inputRef.current.value;
+      if (inputRef && inputRef.current) {
+        inputRef.current.value = "";
+      }
+      const newMessage = { role: "user", content };
+      setChatMessages((prev) => [...prev, newMessage]);
+      const userId = user._id;
+      const chatData = await sendChatRequest(content, userId, currentChatBotCredential);
+
+
+
+      setChatMessages([...chatData]);
+      navigate(`/chat/${currentChatBotCredential}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+
+
+
+
   useEffect(() => {
     const handleClick = async () => {
       const chatId = chatbotId
       const userId = user._id
-      console.log("hello")
-      console.log(chatId)
-      console.log(userId)
+
       try {
         const chats = await axios.get(`http://localhost:8800/api/chat/chats/${chatId}/${userId}`)
         setTyped(true)
         setChatMessages(chats.data[0].chats)
-        console.log("done")
+
       } catch (error) {
         console.log(error)
 
@@ -69,13 +78,14 @@ const Chat = () => {
 
   }, [location])
   const handleAddChat = () => {
+    setChatMessages([])
     navigate("/chat")
   }
 
 
   const handleClickChat = (e, chat) => {
 
-    console.log("hello from sidebar")
+
     navigate(`/chat/${chat.id}`)
   }
   console.log(user.chats)
@@ -109,6 +119,7 @@ const Chat = () => {
 
 
 
+
           <Avatar
             sx={{
               mx: "auto",
@@ -125,30 +136,36 @@ const Chat = () => {
             }}>
             You are talking to a ChatBOT
           </Typography>
-
-
-          <Button sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems : "center",
-            gap:"5px"
-
-          }}
-          onClick={handleAddChat}
+          <Button
+            sx={{
+              width: "200px",
+              my: 2,
+              color: "white",
+              fontWeight: "500",
+              fontSize: "20px",
+              borderRadius: 3,
+              mx: "auto",
+              bgcolor: blue[900],
+              ":hover": {
+                bgcolor: blue.A700
+              }
+            }}
+            onClick={handleAddChat}
           >
-            <Typography>New Chat</Typography>
-            <IoAddCircle style={{fontSize:"20px", fontWeight:"700" }}/>
+            New Chat <IoAddCircle style={{ fontSize: "30px", fontWeight: "700", margin: "3px" }} />
           </Button>
-          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 1, p: 3 }}>
+
+
+          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 1, p: 2 }}>
             Previous chats
           </Typography>
 
-          <nav aria-label="secondary mailbox folders " style={{ maxHeight: '50%0', overflowY: 'auto' }}>
+          <nav aria-label="secondary mailbox folders " style={{ maxHeight: '70%', overflowY: 'auto', margin :2}}>
             <List>
               {
                 user.chats.map((chat) => (
                   <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton sx={{bgcolor: "#05101c", borderRadius: 3, my : 0.5}}>
                       <ListItemText primary={chat.chats[0].content} onClick={(e) => handleClickChat(e, chat)} />
                     </ListItemButton>
                   </ListItem>
@@ -160,21 +177,7 @@ const Chat = () => {
           </nav>
 
 
-          <Button
-            sx={{
-              width: "200px",
-              my: "auto",
-              color: "white",
-              fontWeight: "700",
-              borderRadius: 3,
-              mx: "auto",
-              bgcolor: red[300],
-              ":hover": {
-                bgcolor: red.A400
-              }
-            }}>
-            Clear Conversation
-          </Button>
+
         </Box>
       </Box>
       <Box
@@ -192,7 +195,7 @@ const Chat = () => {
             mx: "auto",
             fontWeight: "600",
           }}>
-          Model - GPT 3.5 Turbo
+          Haya GPT 3.5 Turbo
         </Typography>
         <Box
           sx={{
