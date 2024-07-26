@@ -76,54 +76,6 @@ export const generateChatCompletion = async (req, res) => {
 
 
 
-
-        // if (!chatGroupId) {
-
-        //     const newChatGroupId = randomUUID();
-        //     chatGroup = { id: newChatGroupId, chats: [] }
-        //     user.chats.push(chatGroup)
-        //     const indice = user.chats.findIndex(function (item) {
-        //         return item.id === newChatGroupId;
-        //     });
-
-
-        //     const chats = user.chats[indice].chats.map(({ role, content }) => ({
-        //         role,
-        //         content
-        //     }))
-        //     user.chats[indice].chats.push({ content: message, role: "user" })
-        //     chats.push({ content: message, role: "user" })
-        //     console.log(chats)
-        //     const config = configureOpenAI()
-        //     const openai = new OpenAI(config)
-        //     const chatResponse = await openai.chat.completions.create({
-        //         model: "gpt-3.5-turbo",
-        //         messages: chats,
-        //     });
-        //     user.chats[indice].chats.push(chatResponse.choices[0].message);
-        //     console.log(user.chats[indice].chats)
-        //     await user.save()
-        //     return res.status(200).json(
-        //         user.chats[indice].chats
-        //     )
-        // }
-
-        // const chats = chatGroup.chats.map(({ role, content }) => ({
-        //     role,
-        //     content
-        // }))
-        // chats.push({ content: message, role: "user" })
-        // user.chats.chats.push({ content: message, role: "user" })
-        // const config = configureOpenAI()
-        // const openai = new OpenAI(config)
-        // const chatResponse = await openai.chat.completions.create({
-        //     model: "gpt-3.5-turbo",
-        //     messages: chats,
-        // });
-        // user.chats.chats.push(chatResponse.choices[0].message);
-        // await user.save();
-        // return res.status(200).json({ chatGroupId: chatGroup.id, chats: chatGroup.chats });
-
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: "Something went wrong" });
